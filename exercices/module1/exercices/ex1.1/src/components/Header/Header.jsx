@@ -1,4 +1,4 @@
-import Logo from 'LOGO.png'
+import Logo from 'img/LOGO.png'
 const Header = (props) => {
   return (
     <div>
