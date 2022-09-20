@@ -1,6 +1,6 @@
-import Content from "../Content/Content";
-import Header from "../Header/Header";
-import Total from "../Total/Total";
+import Content from "components/Content/Content";
+import Header from "components/Header/Header";
+import Total from  "components/Total/Total";
 
 
 const App = () => {
