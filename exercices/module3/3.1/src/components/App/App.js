@@ -13,13 +13,15 @@ const App = () => {
   const changeBad = () => setBad(bad + 1)
 
   return (
-    <div>
+    <div id='page'>
       <h1> give feedback </h1>
       <Bouton changeCount={changeGood} text={"good"} />
       <Bouton changeCount={changeNeutral} text={"neutral"} />
       <Bouton changeCount={changeBad} text={"bad"} />
 
       <Statistics good={good} neutral={neutral} bad={bad} />
+
+      
     </div>
   )
 }

@@ -1,11 +1,24 @@
-import Display from "components/Display/Display"
-
 const StatisticLine = ({text, value}) => {
-    return (
-        <>
-            <Display text={text} number={value} />
-        </>
-    )
+
+    if(text === 'positive'){
+        return (
+            <>
+            <tr>
+                <td> {text} </td>
+                <td> {value} % </td>
+            </tr>
+            </>
+        )
+    } else {
+        return (
+            <>
+            <tr>
+                <td> {text} </td>
+                <td> {value}</td>
+            </tr>
+            </>
+        )
+    }
 }
 
 export default StatisticLine
