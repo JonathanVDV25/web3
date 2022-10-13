@@ -1,11 +1,13 @@
 import Header from "components/Header/Header";
 import Content from "components/Content/Content";
 
-const Course = (course) => {
+const Course = ({course}) => {
+    const {name: courseName, parts: courseParts } = course;
+
     return (
         <>
-            <Header course={course.course.name} />
-            <Content part={course.course.parts} />
+            <Header course={courseName} />
+            <Content parts={courseParts} />
         </>
     )
 }
