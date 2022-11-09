@@ -4,31 +4,6 @@ const express = require("express")
 const morgan = require('morgan')
 const Person = require('./models/phonebook')
 
-// Data. This emulates a datastore
-const allPersons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada lovelace",
-    number: "39-44-5232323",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-2345345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendick",
-    number: "39-23-64234122",
-  },
-]
-
-
 // Initializers. These blocks should be placed in different files, for example middlewares.js, server.js...
 // but let's keep this simple.
 const app = express()
@@ -80,32 +55,47 @@ app.get("/api/persons", (request, response) => {
     })
 })
 
-app.get("/api/persons/:id", (request, response) => {
-  const idParam = request.params.id
-  const id = Number(idParam)
-  const person = allPersons.find(person => person.id === id)
-
-  if (person) {
-    response.json(person)
-  } else {
-    response.status(404).end()
-  }
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
-app.delete("/api/persons/:id", (request, response) => {
-  const idParam = request.params.id
-  const id = Number(idParam)
-  const personIndex = allPersons.findIndex(person => person.id === id)
-  if (personIndex > -1) {
-    allPersons.splice(personIndex, 1) // We do NOT use delete because it creates a sparse array with a wrong length
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndRemove(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    callnumber: body.callnumber,
   }
-  response.status(204).end()
+
+  // { new: true } -> so updatedPerson gets the new value after the update
+  // Without that, updatedPerson would get the old value after the update
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
 })
 
 app.post("/api/persons", async (request, response) => {
   const personPayload = request.body
 
-    if (personPayload.name === undefined || personPayload.callnumber === undefined) { // a changer pt etre
+    if (personPayload.name === undefined || personPayload.callnumber === undefined) { 
         return response.status(400).json({ error: 'content missing' })
     }
 
@@ -123,15 +113,12 @@ app.post("/api/persons", async (request, response) => {
     errorMessages.push("name must be unique")
   }
 
-
   if (errorMessages.length > 0) {
-    console.log('vava');
     response
       .status(422)
       .json({
         errorMessages,
       })
-      console.log('oui');
     return
   }
   
@@ -139,3 +126,25 @@ app.post("/api/persons", async (request, response) => {
     response.json(savedNote)
   })
 })
+
+// important that the middleware for handling unsupported routes is next to the last middleware that is loaded into Express, just before the error handler.
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unkown endpoint' })
+}
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformed id' })
+  }
+
+  // In all other error situations, the middleware passes the error forward to the default Express error handler
+  next(error)
+}
+
+// this has to be the last loaded middleware
+app.use(errorHandler)

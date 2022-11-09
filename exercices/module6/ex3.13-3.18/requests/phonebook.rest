@@ -1,0 +1,26 @@
+### Get all persons from phonebook
+GET http://localhost:3001/api/persons
+
+### Get info
+GET http://localhost:3001/info
+
+### Add a person to phonebook
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Jonathan Van de Vyver 25",
+    "callnumber": "047805-69325"
+}
+
+### Update a person
+PUT http://localhost:3001/api/persons/636c1170e02ec7a734e4782c
+Content-Type: application/json
+
+{
+    "name": "Jonathan Van de Vyver 25",
+    "callnumber": "123456789"
+}
+
+### Delete a person
+DELETE http://localhost:3001/api/persons/636bbd5f9e794dee2d29781d
