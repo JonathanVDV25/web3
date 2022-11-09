@@ -1,0 +1,16 @@
+### Make a note
+post http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content": "VS Code REST Client",
+    "important": true
+}
+
+### GET all note
+get http://localhost:3001/api/notes
+
+### GET one note
+get http://localhost:3001/api/notes/636b8377a6e94a4fc5998bb7
+
+
