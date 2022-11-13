@@ -7,7 +7,7 @@ import {
   useNavigate,
 } from "react-router-dom"
 import { UserOutlined } from '@ant-design/icons';
-import { Input, Button } from 'antd'
+import { Input, Button, Form } from 'antd'
 
 const Ancdote = ({anecdote}) => {
 
@@ -56,44 +56,96 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
-
   const navigate = useNavigate()
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = (values) => {
     props.addNew({
-      content,
-      author,
-      info,
+      content: values.content,
+      author: values.author, 
+      info: values.info,
       votes: 0
     })
-    props.setNotification(`A new anecdote ${content} created!`)
+    props.setNotification(`A new anecdote ${values.content} created!`)
     navigate('/')
+  }
+
+  const onFinish = (values) => {
+    console.log('Success:', values);
+    handleSubmit(values)
+  }
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
   }
 
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form>
-        <div>
-          content
-          <Input value={content} onChange={(e) => setContent(e.target.value)} />
-          
-        </div>
-        <div>
-          author
-          <Input prefix={<UserOutlined />} name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
-        </div>
-        <div>
-          url for more info
-          <Input value={info} onChange={(e)=> setInfo(e.target.value)} />
-        </div>
-        <Button type='primary' onClick={handleSubmit}>create</Button>
-      </form>
+
+      <Form 
+        name='basic'
+        labelCol={{
+          span: 8,
+        }}
+        wrapperCol={{
+          span: 16,
+        }}
+        initialValues={{
+          remember: true,
+        }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete='off' 
+      >
+
+        <Form.Item
+          label="Content"
+          name="content"
+          rules={[
+            {
+              required: true,
+              message: 'Please input an anecdote content!'
+            },
+          ]}
+          >
+            <Input />
+          </Form.Item>
+
+          <Form.Item
+            label="Author"
+            name="author"
+            rules={[
+              {
+                required: true,
+                message: 'Please input an anecdote author!'
+              },
+            ]}>
+              <Input prefix={<UserOutlined />} />
+          </Form.Item>
+
+          <Form.Item
+            label="URL"
+            name="url"
+            rules={[
+              {
+                required: true,
+                message: 'Please input an anecdote url!'
+              },
+            ]}>
+              <Input />
+          </Form.Item>
+
+          <Form.Item
+            wrapperCol={{
+              offset: 8,
+              span: 16,
+            }}>
+
+              <Button type='primary' htmlType='submit'>
+                Create
+              </Button>
+            
+          </Form.Item>
+      </Form>
     </div>
   )
 
